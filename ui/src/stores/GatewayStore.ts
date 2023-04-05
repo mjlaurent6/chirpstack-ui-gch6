@@ -17,6 +17,7 @@ import {
 
 import SessionStore from "./SessionStore";
 import { HandleError } from "./helpers";
+import * as mqtt from "mqtt";
 
 class GatewayStore extends EventEmitter {
   client: GatewayServiceClient;
@@ -120,6 +121,20 @@ class GatewayStore extends EventEmitter {
       callbackFunc(resp);
     });
   };
+
+  sendMqttMessage = (
+      topic: string,
+  ) => {
+    let client : mqtt.MqttClient = mqtt.connect('ws://broker.emqx.io:8083/mqtt')
+    client.on('connect', function () {
+      client.publish(topic, "hello world!")
+    })
+    client.end();
+    notification.success({
+      message: "Command Send with topic: " + topic,
+      duration: 3,
+    });
+  }
 }
 
 const gatewayStore = new GatewayStore();

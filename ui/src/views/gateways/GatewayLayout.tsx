@@ -20,6 +20,7 @@ import GatewayFrames from "./GatewayFrames";
 import GatewayCertificate from "./GatewayCertificate";
 import Admin from "../../components/Admin";
 import SessionStore from "../../stores/SessionStore";
+import GatewayRemoteControl from "./GatewayRemoteControl";
 
 interface MatchParams {
   gatewayId: string;
@@ -89,6 +90,9 @@ class GatewayLayout extends Component<IProps, IState> {
     if (path.endsWith("/frames")) {
       tab = "frames";
     }
+    if (path.endsWith("/remote")) {
+      tab = "remote";
+    }
 
     let isGatewayAdmin =
       SessionStore.isAdmin() ||
@@ -146,6 +150,9 @@ class GatewayLayout extends Component<IProps, IState> {
             <Menu.Item key="frames">
               <Link to={`/tenants/${tenant.getId()}/gateways/${gw.getGatewayId()}/frames`}>LoRaWAN frames</Link>
             </Menu.Item>
+            <Menu.Item key="remote">
+              <Link to={`/tenants/${tenant.getId()}/gateways/${gw.getGatewayId()}/remote`}>Remote Management</Link>
+            </Menu.Item>
           </Menu>
           <Switch>
             <Route
@@ -167,6 +174,11 @@ class GatewayLayout extends Component<IProps, IState> {
               exact
               path={`${this.props.match.path}/frames`}
               render={props => <GatewayFrames gateway={gw} {...props} />}
+            />
+            <Route
+                exact
+                path={`${this.props.match.path}/remote`}
+                render={props => <GatewayRemoteControl gateway={gw} {...props} />}
             />
           </Switch>
         </Card>

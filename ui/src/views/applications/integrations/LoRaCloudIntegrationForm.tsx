@@ -57,9 +57,9 @@ class LoRaCloudIntegrationForm extends Component<IProps, IState> {
     if (mgsv !== undefined) {
       mgs.setToken(mgsv.token);
       mgs.setModemEnabled(mgsv.modemEnabled);
-      mgs.setForwardFPortsList(mgsv.forwardFPortsList);
+      // mgs.setForwardFPortsList(mgsv.forwardFPortsList);
       mgs.setGnssUseRxTime(mgsv.gnssUseRxTime);
-      mgs.setGnssUseGatewayLocation(mgsv.gnssUseGatewayLocation);
+      // mgs.setGnssUseGatewayLocation(mgsv.gnssUseGatewayLocation);
       mgs.setParseTlv(mgsv.parseTlv);
       mgs.setGeolocationBufferTtl(mgsv.geolocationBufferTtl);
       mgs.setGeolocationMinBufferSize(mgsv.geolocationMinBufferSize);
