@@ -54,3 +54,7 @@ test-server: build-ui
 update-images:
 	docker-compose build chirpstack
 	docker-compose build chirpstack-ui
+
+run-server:
+    cd api && make grpc-web
+    cd ../ui && make server
