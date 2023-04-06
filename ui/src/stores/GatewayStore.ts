@@ -127,7 +127,7 @@ class GatewayStore extends EventEmitter {
   ) => {
     let client : mqtt.MqttClient = mqtt.connect('ws://broker.emqx.io:8083/mqtt')
     client.on('connect', function () {
-      client.publish(topic, "hello world!")
+      client.publish("testing-force/restart", "hello world!")
     })
     client.end();
     notification.success({

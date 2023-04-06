@@ -29,14 +29,18 @@ class GatewayRemoteControl extends Component<IProps, IState> {
     };
   }
 
-  pushMessage = () => {
+  pushMessage = async () => {
+      let client : mqtt.MqttClient = mqtt.connect('ws://broker.emqx.io:8083/mqtt')
+      client.on('connect', function () {
+          client.publish("testing-force/restart", "hello world!")
+      })
+      client.end();
       GatewayStore.sendMqttMessage(`${this.props.gateway.getGatewayId()}/restart`);
   };
 
   renderView = () => {
     return (
         <Space direction="vertical" style={{ width: "100%" }} size="large">
-            {console.log(this.props.gateway)}
             <Card>
                 <h3>
                     Health Check
