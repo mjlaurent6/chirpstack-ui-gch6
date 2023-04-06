@@ -68,6 +68,7 @@ class LogTable extends Component<IProps, IState> {
 
     return (
       <div>
+        {console.log(body)}
         <Drawer
           title="Details"
           placement="right"

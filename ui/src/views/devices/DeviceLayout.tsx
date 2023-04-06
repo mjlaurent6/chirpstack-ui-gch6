@@ -29,6 +29,7 @@ import DeviceFrames from "./DeviceFrames";
 import DeviceEvents from "./DeviceEvents";
 import DeviceQueue from "./DeviceQueue";
 import DeviceActivation from "./DeviceActivation";
+import DeviceSearch from "./DeviceSearch";
 
 interface MatchParams {
   devEui: string;
@@ -126,6 +127,9 @@ class DeviceLayout extends Component<IProps, IState> {
     if (path.endsWith("frames")) {
       tab = "frames";
     }
+    if (path.endsWith("search")) {
+      tab = "search";
+    }
 
     return (
       <Space direction="vertical" style={{ width: "100%" }} size="large">
@@ -215,6 +219,11 @@ class DeviceLayout extends Component<IProps, IState> {
                 LoRaWAN frames
               </Link>
             </Menu.Item>
+            <Menu.Item key="search">
+              <Link to={`/tenants/${tenant.getId()}/applications/${app.getId()}/devices/${device.getDevEui()}/search`}>
+                Search Device
+              </Link>
+            </Menu.Item>
           </Menu>
           <Switch>
             <Route
@@ -257,6 +266,13 @@ class DeviceLayout extends Component<IProps, IState> {
               render={props => (
                 <DeviceActivation device={device} deviceProfile={dp} tenant={tenant} application={app} {...props} />
               )}
+            />
+            <Route
+                exact
+                path={`${this.props.match.path}/search`}
+                render={props => (
+                    <DeviceSearch device={device}/>
+                )}
             />
           </Switch>
         </Card>
