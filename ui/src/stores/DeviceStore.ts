@@ -1,287 +1,319 @@
-import { notification } from "antd";
-import { EventEmitter } from "events";
+import {notification} from "antd";
+import {EventEmitter} from "events";
 
-import { DeviceServiceClient } from "@chirpstack/chirpstack-api-grpc-web/api/device_grpc_web_pb";
+import {DeviceServiceClient} from "@chirpstack/chirpstack-api-grpc-web/api/device_grpc_web_pb";
 import {
-  CreateDeviceRequest,
-  GetDeviceRequest,
-  GetDeviceResponse,
-  UpdateDeviceRequest,
-  DeleteDeviceRequest,
-  ListDevicesRequest,
-  ListDevicesResponse,
-  CreateDeviceKeysRequest,
-  GetDeviceKeysRequest,
-  GetDeviceKeysResponse,
-  UpdateDeviceKeysRequest,
-  DeleteDeviceKeysRequest,
-  EnqueueDeviceQueueItemRequest,
-  EnqueueDeviceQueueItemResponse,
-  FlushDeviceQueueRequest,
-  GetDeviceQueueItemsRequest,
-  GetDeviceQueueItemsResponse,
-  FlushDevNoncesRequest,
-  GetDeviceActivationRequest,
-  GetDeviceActivationResponse,
-  ActivateDeviceRequest,
-  GetRandomDevAddrRequest,
-  GetRandomDevAddrResponse,
-  GetDeviceMetricsRequest,
-  GetDeviceMetricsResponse,
-  GetDeviceLinkMetricsRequest,
-  GetDeviceLinkMetricsResponse,
+    CreateDeviceRequest,
+    GetDeviceRequest,
+    GetDeviceResponse,
+    UpdateDeviceRequest,
+    DeleteDeviceRequest,
+    ListDevicesRequest,
+    ListDevicesResponse,
+    CreateDeviceKeysRequest,
+    GetDeviceKeysRequest,
+    GetDeviceKeysResponse,
+    UpdateDeviceKeysRequest,
+    DeleteDeviceKeysRequest,
+    EnqueueDeviceQueueItemRequest,
+    EnqueueDeviceQueueItemResponse,
+    FlushDeviceQueueRequest,
+    GetDeviceQueueItemsRequest,
+    GetDeviceQueueItemsResponse,
+    FlushDevNoncesRequest,
+    GetDeviceActivationRequest,
+    GetDeviceActivationResponse,
+    ActivateDeviceRequest,
+    GetRandomDevAddrRequest,
+    GetRandomDevAddrResponse,
+    GetDeviceMetricsRequest,
+    GetDeviceMetricsResponse,
+    GetDeviceLinkMetricsRequest,
+    GetDeviceLinkMetricsResponse,
 } from "@chirpstack/chirpstack-api-grpc-web/api/device_pb";
 
 import SessionStore from "./SessionStore";
-import { HandleError } from "./helpers";
+import {HandleError} from "./helpers";
+import axios from "axios";
+import {json} from "stream/consumers";
+import DeviceSearch, {DeviceSearchUpLink} from "../views/devices/DeviceSearch";
 
 class DeviceStore extends EventEmitter {
-  client: DeviceServiceClient;
+    client: DeviceServiceClient;
 
-  constructor() {
-    super();
-    this.client = new DeviceServiceClient("");
-  }
+    constructor() {
+        super();
+        this.client = new DeviceServiceClient("");
+    }
 
-  create = (req: CreateDeviceRequest, callbackFunc: () => void) => {
-    this.client.create(req, SessionStore.getMetadata(), err => {
-      if (err !== null) {
-        HandleError(err);
-        return;
-      }
+    create = (req: CreateDeviceRequest, callbackFunc: () => void) => {
+        this.client.create(req, SessionStore.getMetadata(), err => {
+            if (err !== null) {
+                HandleError(err);
+                return;
+            }
 
-      notification.success({
-        message: "Device created",
-        duration: 3,
-      });
+            notification.success({
+                message: "Device created",
+                duration: 3,
+            });
 
-      callbackFunc();
-    });
-  };
+            callbackFunc();
+        });
+    };
 
-  get = (req: GetDeviceRequest, callbackFunc: (resp: GetDeviceResponse) => void) => {
-    this.client.get(req, SessionStore.getMetadata(), (err, resp) => {
-      if (err !== null) {
-        HandleError(err);
-        return;
-      }
+    get = (req: GetDeviceRequest, callbackFunc: (resp: GetDeviceResponse) => void) => {
+        this.client.get(req, SessionStore.getMetadata(), (err, resp) => {
+            if (err !== null) {
+                HandleError(err);
+                return;
+            }
 
-      callbackFunc(resp);
-    });
-  };
+            callbackFunc(resp);
+        });
+    };
 
-  update = (req: UpdateDeviceRequest, callbackFunc: () => void) => {
-    this.client.update(req, SessionStore.getMetadata(), err => {
-      if (err !== null) {
-        HandleError(err);
-        return;
-      }
+    update = (req: UpdateDeviceRequest, callbackFunc: () => void) => {
+        this.client.update(req, SessionStore.getMetadata(), err => {
+            if (err !== null) {
+                HandleError(err);
+                return;
+            }
 
-      notification.success({
-        message: "Device updated",
-        duration: 3,
-      });
+            notification.success({
+                message: "Device updated",
+                duration: 3,
+            });
 
-      callbackFunc();
-    });
-  };
+            callbackFunc();
+        });
+    };
 
-  delete = (req: DeleteDeviceRequest, callbackFunc: () => void) => {
-    this.client.delete(req, SessionStore.getMetadata(), err => {
-      if (err !== null) {
-        HandleError(err);
-        return;
-      }
+    delete = (req: DeleteDeviceRequest, callbackFunc: () => void) => {
+        this.client.delete(req, SessionStore.getMetadata(), err => {
+            if (err !== null) {
+                HandleError(err);
+                return;
+            }
 
-      notification.success({
-        message: "Device deleted",
-        duration: 3,
-      });
+            notification.success({
+                message: "Device deleted",
+                duration: 3,
+            });
 
-      callbackFunc();
-    });
-  };
+            callbackFunc();
+        });
+    };
 
-  list = (req: ListDevicesRequest, callbackFunc: (resp: ListDevicesResponse) => void) => {
-    this.client.list(req, SessionStore.getMetadata(), (err, resp) => {
-      if (err !== null) {
-        HandleError(err);
-        return;
-      }
+    list = (req: ListDevicesRequest, callbackFunc: (resp: ListDevicesResponse) => void) => {
+        this.client.list(req, SessionStore.getMetadata(), (err, resp) => {
+            if (err !== null) {
+                HandleError(err);
+                return;
+            }
 
-      callbackFunc(resp);
-    });
-  };
+            callbackFunc(resp);
+        });
+    };
 
-  createKeys = (req: CreateDeviceKeysRequest, callbackFunc: () => void) => {
-    this.client.createKeys(req, SessionStore.getMetadata(), err => {
-      if (err !== null) {
-        HandleError(err);
-        return;
-      }
+    createKeys = (req: CreateDeviceKeysRequest, callbackFunc: () => void) => {
+        this.client.createKeys(req, SessionStore.getMetadata(), err => {
+            if (err !== null) {
+                HandleError(err);
+                return;
+            }
 
-      notification.success({
-        message: "Device-key created",
-        duration: 3,
-      });
+            notification.success({
+                message: "Device-key created",
+                duration: 3,
+            });
 
-      callbackFunc();
-    });
-  };
+            callbackFunc();
+        });
+    };
 
-  getKeys = (req: GetDeviceKeysRequest, callbackFunc: (resp?: GetDeviceKeysResponse) => void) => {
-    this.client.getKeys(req, SessionStore.getMetadata(), (err, resp) => {
-      if (err !== null) {
-        if (err.code !== 5) {
-          HandleError(err);
-          return;
-        }
-      }
+    getKeys = (req: GetDeviceKeysRequest, callbackFunc: (resp?: GetDeviceKeysResponse) => void) => {
+        this.client.getKeys(req, SessionStore.getMetadata(), (err, resp) => {
+            if (err !== null) {
+                if (err.code !== 5) {
+                    HandleError(err);
+                    return;
+                }
+            }
 
-      callbackFunc(resp);
-    });
-  };
+            callbackFunc(resp);
+        });
+    };
 
-  updateKeys = (req: UpdateDeviceKeysRequest, callbackFunc: () => void) => {
-    this.client.updateKeys(req, SessionStore.getMetadata(), err => {
-      if (err !== null) {
-        HandleError(err);
-        return;
-      }
+    updateKeys = (req: UpdateDeviceKeysRequest, callbackFunc: () => void) => {
+        this.client.updateKeys(req, SessionStore.getMetadata(), err => {
+            if (err !== null) {
+                HandleError(err);
+                return;
+            }
 
-      notification.success({
-        message: "Device-keys updated",
-        duration: 3,
-      });
+            notification.success({
+                message: "Device-keys updated",
+                duration: 3,
+            });
 
-      callbackFunc();
-    });
-  };
+            callbackFunc();
+        });
+    };
 
-  deleteKeys = (req: DeleteDeviceKeysRequest, callbackFunc: () => void) => {
-    this.client.deleteKeys(req, SessionStore.getMetadata(), err => {
-      if (err !== null) {
-        HandleError(err);
-        return;
-      }
+    deleteKeys = (req: DeleteDeviceKeysRequest, callbackFunc: () => void) => {
+        this.client.deleteKeys(req, SessionStore.getMetadata(), err => {
+            if (err !== null) {
+                HandleError(err);
+                return;
+            }
 
-      notification.success({
-        message: "Device-keys deleted",
-        duration: 3,
-      });
+            notification.success({
+                message: "Device-keys deleted",
+                duration: 3,
+            });
 
-      callbackFunc();
-    });
-  };
+            callbackFunc();
+        });
+    };
 
-  getMetrics = (req: GetDeviceMetricsRequest, callbackFunc: (resp: GetDeviceMetricsResponse) => void) => {
-    this.client.getMetrics(req, SessionStore.getMetadata(), (err, resp) => {
-      if (err !== null) {
-        HandleError(err);
-        return;
-      }
+    getMetrics = (req: GetDeviceMetricsRequest, callbackFunc: (resp: GetDeviceMetricsResponse) => void) => {
+        this.client.getMetrics(req, SessionStore.getMetadata(), (err, resp) => {
+            if (err !== null) {
+                HandleError(err);
+                return;
+            }
 
-      callbackFunc(resp);
-    });
-  };
+            callbackFunc(resp);
+        });
+    };
 
-  getLinkMetrics = (req: GetDeviceLinkMetricsRequest, callbackFunc: (resp: GetDeviceLinkMetricsResponse) => void) => {
-    this.client.getLinkMetrics(req, SessionStore.getMetadata(), (err, resp) => {
-      if (err !== null) {
-        HandleError(err);
-        return;
-      }
+    getLinkMetrics = (req: GetDeviceLinkMetricsRequest, callbackFunc: (resp: GetDeviceLinkMetricsResponse) => void) => {
+        this.client.getLinkMetrics(req, SessionStore.getMetadata(), (err, resp) => {
+            if (err !== null) {
+                HandleError(err);
+                return;
+            }
 
-      callbackFunc(resp);
-    });
-  };
+            callbackFunc(resp);
+        });
+    };
 
-  enqueue = (req: EnqueueDeviceQueueItemRequest, callbackFunc: (resp: EnqueueDeviceQueueItemResponse) => void) => {
-    this.client.enqueue(req, SessionStore.getMetadata(), (err, resp) => {
-      if (err !== null) {
-        HandleError(err);
-        return;
-      }
+    enqueue = (req: EnqueueDeviceQueueItemRequest, callbackFunc: (resp: EnqueueDeviceQueueItemResponse) => void) => {
+        this.client.enqueue(req, SessionStore.getMetadata(), (err, resp) => {
+            if (err !== null) {
+                HandleError(err);
+                return;
+            }
 
-      callbackFunc(resp);
-    });
-  };
+            callbackFunc(resp);
+        });
+    };
 
-  flushQueue = (req: FlushDeviceQueueRequest, callbackFunc: () => void) => {
-    this.client.flushQueue(req, SessionStore.getMetadata(), err => {
-      if (err !== null) {
-        HandleError(err);
-        return;
-      }
+    flushQueue = (req: FlushDeviceQueueRequest, callbackFunc: () => void) => {
+        this.client.flushQueue(req, SessionStore.getMetadata(), err => {
+            if (err !== null) {
+                HandleError(err);
+                return;
+            }
 
-      callbackFunc();
-    });
-  };
+            callbackFunc();
+        });
+    };
 
-  flushDevNonces = (req: FlushDevNoncesRequest, callbackFunc: () => void) => {
-    this.client.flushDevNonces(req, SessionStore.getMetadata(), err => {
-      if (err !== null) {
-        HandleError(err);
-        return;
-      }
+    flushDevNonces = (req: FlushDevNoncesRequest, callbackFunc: () => void) => {
+        this.client.flushDevNonces(req, SessionStore.getMetadata(), err => {
+            if (err !== null) {
+                HandleError(err);
+                return;
+            }
 
-      notification.success({
-        message: "OTAA device-nonces flushed",
-        duration: 3,
-      });
+            notification.success({
+                message: "OTAA device-nonces flushed",
+                duration: 3,
+            });
 
-      callbackFunc();
-    });
-  };
+            callbackFunc();
+        });
+    };
 
-  getQueue = (req: GetDeviceQueueItemsRequest, callbackFunc: (resp: GetDeviceQueueItemsResponse) => void) => {
-    this.client.getQueue(req, SessionStore.getMetadata(), (err, resp) => {
-      if (err !== null) {
-        HandleError(err);
-        return;
-      }
+    getQueue = (req: GetDeviceQueueItemsRequest, callbackFunc: (resp: GetDeviceQueueItemsResponse) => void) => {
+        this.client.getQueue(req, SessionStore.getMetadata(), (err, resp) => {
+            if (err !== null) {
+                HandleError(err);
+                return;
+            }
 
-      callbackFunc(resp);
-    });
-  };
+            callbackFunc(resp);
+        });
+    };
 
-  activate = (req: ActivateDeviceRequest, callbackFunc: () => void) => {
-    this.client.activate(req, SessionStore.getMetadata(), err => {
-      if (err !== null) {
-        HandleError(err);
-        return;
-      }
+    activate = (req: ActivateDeviceRequest, callbackFunc: () => void) => {
+        this.client.activate(req, SessionStore.getMetadata(), err => {
+            if (err !== null) {
+                HandleError(err);
+                return;
+            }
 
-      notification.success({
-        message: "Device (re)activated",
-        duration: 3,
-      });
+            notification.success({
+                message: "Device (re)activated",
+                duration: 3,
+            });
 
-      callbackFunc();
-    });
-  };
+            callbackFunc();
+        });
+    };
 
-  getActivation = (req: GetDeviceActivationRequest, callbackFunc: (resp: GetDeviceActivationResponse) => void) => {
-    this.client.getActivation(req, SessionStore.getMetadata(), (err, resp) => {
-      if (err !== null) {
-        HandleError(err);
-        return;
-      }
+    getActivation = (req: GetDeviceActivationRequest, callbackFunc: (resp: GetDeviceActivationResponse) => void) => {
+        this.client.getActivation(req, SessionStore.getMetadata(), (err, resp) => {
+            if (err !== null) {
+                HandleError(err);
+                return;
+            }
 
-      callbackFunc(resp);
-    });
-  };
+            callbackFunc(resp);
+        });
+    };
 
-  getRandomDevAddr = (req: GetRandomDevAddrRequest, callbackFunc: (resp: GetRandomDevAddrResponse) => void) => {
-    this.client.getRandomDevAddr(req, SessionStore.getMetadata(), (err, resp) => {
-      if (err !== null) {
-        HandleError(err);
-        return;
-      }
+    getRandomDevAddr = (req: GetRandomDevAddrRequest, callbackFunc: (resp: GetRandomDevAddrResponse) => void) => {
+        this.client.getRandomDevAddr(req, SessionStore.getMetadata(), (err, resp) => {
+            if (err !== null) {
+                HandleError(err);
+                return;
+            }
 
-      callbackFunc(resp);
-    });
-  };
+            callbackFunc(resp);
+        });
+    };
+
+    getSearchLocation = () : DeviceSearchUpLink[] => {
+        let data : DeviceSearchUpLink[] = [
+            {
+                "gatewayId":"0016c001f160f1b2",
+                "rssi":-103,
+                "snr":2.799999952316284,
+                "location":{
+                    "altitude":1876.0,
+                    "latitude":22.30009,
+                    "longitude":114.2564
+                },
+                "estimatedRadius": 500,
+            },
+            {
+                "gatewayId":"0016c001f160de1c",
+                "rssi": -103,
+                "snr":2.799999952316284,
+                "location":{
+                    "altitude":1876.0,
+                    "latitude":22.30609,
+                    "longitude":114.2564
+                },
+                "estimatedRadius": 400,
+            }
+        ];
+        // axios.get('/test').then((res)=> data = res)
+        return data;
+    }
 }
 
 const deviceStore = new DeviceStore();

@@ -10,6 +10,7 @@ interface IProps {
   center?: [number, number];
   bounds?: LatLngTuple[];
   boundsOptions?: FitBoundsOptions;
+  zoom?: number;
 }
 
 interface IState {
@@ -69,7 +70,7 @@ class Map extends Component<IProps, IState> {
         bounds={this.props.bounds}
         boundsOptions={this.props.boundsOptions}
         center={this.props.center}
-        zoom={13}
+        zoom={this.props.zoom || 13}
         scrollWheelZoom={false}
         animate={true}
         style={style}
