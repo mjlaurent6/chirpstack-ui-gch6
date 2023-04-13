@@ -1,9 +1,11 @@
 services:
-  chirpstack-ui-gch6:
+  frontend:
     build:
-      context: ./ui
-      dockerfile: Dockerfile-devel
-    volumes:
-      - ./ui:/chirpstack/ui
+      context: ui
+      target: development
     ports:
-      - "3000:3000"
+      - 3000:3000
+    stdin_open: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
